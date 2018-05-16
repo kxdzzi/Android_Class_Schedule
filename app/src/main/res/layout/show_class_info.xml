@@ -165,15 +165,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="number"
-                android:visibility="invisible" />
+                android:enabled="false"
+                android:focusable="false"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="visible" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="至第"
+                android:text="至"
                 android:textSize="30sp" />
 
             <EditText
@@ -182,8 +187,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:inputType="number"
-                android:visibility="invisible" />
+                android:enabled="false"
+                android:focusable="false"
+                android:inputType="text"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="visible" />
 
             <TextView
                 android:layout_width="0dp"

@@ -10,9 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,17 +40,21 @@ public class GridAdapter extends BaseAdapter {
     //适配器的界面绑定
     private Button confirm;
     private Button cancel;
-    private EditText addName;
+//    private EditText addName;
     private EditText addRoom;
-    private EditText addWeeks;
+    private EditText weekStart;
+    private EditText weekEnd;
     private Switch ifSingal;
     private Switch ifDouble;
+    private AutoCompleteTextView autoClassName;
 
     //显示课程信息的界面绑定
     private TextView info_name;
     private TextView info_room;
-    private Switch info_if_singal;
-    private Switch info_if_double;
+    private EditText info_weekStart;
+    private EditText info_weekEnd;
+    private RadioButton info_if_singal;
+    private RadioButton info_if_double;
 
     public GridAdapter(Context context) {
         this.mContext = context;
@@ -58,7 +65,7 @@ public class GridAdapter extends BaseAdapter {
 
         //展示课程信息的dialog
         LayoutInflater inflater1 = LayoutInflater.from(mContext);
-        View dialog_show_info = inflater1.inflate(R.layout.show_class_info,null);
+        View dialog_show_info = inflater1.inflate(R.layout.show_class_info, null);
         showClassDialog = new Dialog(mContext);
         showClassDialog.setContentView(dialog_show_info);
 
@@ -96,8 +103,8 @@ public class GridAdapter extends BaseAdapter {
 
             //变换颜色
             int rand = position % colTotal;
-            Log.e("Position","值为"+position);
-            Log.e("rand","值为"+rand);
+//            Log.e("Position", "值为" + position);
+//            Log.e("rand", "值为" + rand);
 
             switch (rand) {    //加载不同的底色
                 case 0:
@@ -126,7 +133,7 @@ public class GridAdapter extends BaseAdapter {
                     break;
             }
         }
-        if(getItem(position).equals("")){
+        if (getItem(position).equals("")) {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -140,7 +147,9 @@ public class GridAdapter extends BaseAdapter {
                     }
                 }
             });
-        }else{
+        } else {
+
+            //点击已经添加课程的位置时显示课程信息
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -156,14 +165,12 @@ public class GridAdapter extends BaseAdapter {
             });
         }
 
-
-
+        //长按已经有课的位置
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View v) {
 
-                AlertDialog dialogDetatils = null;
                 int row = position / rowTotal;
                 int col = position % colTotal;
                 String message = "你长按了第" + String.valueOf(row) + "行，第" + String.valueOf(col) + "列";
@@ -173,34 +180,52 @@ public class GridAdapter extends BaseAdapter {
             }
         });
 
+        //添加课程的dialog
         addClassDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
+                AutoCompleteTextView CLASSES;
                 confirm = (Button) addClassDialog.findViewById(R.id.confirm);
                 cancel = (Button) addClassDialog.findViewById(R.id.cancel);
-                addName = (EditText) addClassDialog.findViewById(R.id.className);
+//                addName = (EditText) addClassDialog.findViewById(R.id.className);
                 addRoom = (EditText) addClassDialog.findViewById(R.id.classRoom);
-                addWeeks = (EditText) addClassDialog.findViewById(R.id.weeks);
+                weekStart = (EditText) addClassDialog.findViewById(R.id.weekStart);
+                weekEnd = (EditText) addClassDialog.findViewById(R.id.weekEnd);
                 ifSingal = (Switch) addClassDialog.findViewById(R.id.if_singal);
                 ifDouble = (Switch) addClassDialog.findViewById(R.id.if_double);
+                autoClassName = (AutoCompleteTextView)addClassDialog.findViewById(R.id.autoClassName);
+
+                //为添加课的地方写自动补全适配器
+                String[] classNames = {"无线传感网络B","物联网工程与组网技术","马克思基本原理","智能终端操作系统","机器人控制技术概论"};
+                ArrayAdapter<String> nameAdapter = new ArrayAdapter<String>(mContext,android.R.layout.simple_list_item_1,classNames);
+                autoClassName.setAdapter(nameAdapter);
+                //默认每节课都是单双周都有
+                ifSingal.setChecked(true);
+                ifDouble.setChecked(true);
 
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        aClass tempClass = new aClass();
-                        {
-                            tempClass.setClassName(addName.getText().toString());
-                            tempClass.setClassRoom(addRoom.getText().toString());
-                            tempClass.setWeeks(Integer.valueOf(addWeeks.getText().toString()));
-                            tempClass.setPositionX(Position[0]);
-                            tempClass.setPositionY(Position[1]);
+                        try {
+                            aClass tempClass = new aClass();
+                            {
+                                tempClass.setClassName(autoClassName.getText().toString());
+                                tempClass.setClassRoom(addRoom.getText().toString());
+                                tempClass.setWeekStart(Integer.valueOf(weekStart.getText().toString()));
+                                tempClass.setWeekEnd(Integer.valueOf(weekEnd.getText().toString()));
+                                tempClass.setPositionX(Position[0]);
+                                tempClass.setPositionY(Position[1]);
+                                tempClass.setIfDouble(ifDouble.isChecked());
+                                tempClass.setIfSingal(ifSingal.isChecked());
+                            }
+                            tempClass.showInfo();
+                            String msg = "添加课程成功！";
+                            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                            myClasses.addClass(tempClass);
+                        } catch (Exception e) {
+                            Log.e("数据库", "插入数据！");
                         }
-                        tempClass.showInfo();
-//                        String msg = "你点击了确定按钮！位置为" + Position[0]+ " " + Position[1];
-                        String msg = "添加课程成功！";
-                        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-                        myClasses.addClass(tempClass);
                         addClassDialog.dismiss();
 //                        mainWindow.initGridView();
 
@@ -223,13 +248,23 @@ public class GridAdapter extends BaseAdapter {
             @Override
             public void onShow(DialogInterface dialog) {
                 info_name = (TextView) showClassDialog.findViewById(R.id.info_name);
-                info_room = (TextView)showClassDialog.findViewById(R.id.info_room);
-                info_if_double = (Switch)showClassDialog.findViewById(R.id.if_double);
-                info_if_singal = (Switch)showClassDialog.findViewById(R.id.if_singal);
+                info_room = (TextView) showClassDialog.findViewById(R.id.info_room);
+                info_if_double = (RadioButton) showClassDialog.findViewById(R.id.info_if_double);
+                info_if_singal = (RadioButton) showClassDialog.findViewById(R.id.info_if_singal);
+                info_weekStart = (EditText) showClassDialog.findViewById(R.id.info_week_start);
+                info_weekEnd = (EditText) showClassDialog.findViewById(R.id.info_week_end);
 
-                aClass findClass = myClasses.getOne(Position[0],Position[1]);
+                aClass findClass = myClasses.getOne(Position[0], Position[1]);
                 info_name.setText(findClass.getClassName());
                 info_room.setText(findClass.getClassRoom());
+                info_weekStart.setText(String.valueOf(findClass.getWeekStart()));
+                info_weekEnd.setText(String.valueOf(findClass.getWeekEnd()));
+                try {
+                    info_if_double.setChecked(findClass.getIfDouble().equals("1") ? true : false);
+                    info_if_singal.setChecked(findClass.getIfSingal().equals("1") ? true : false);
+                } catch (Exception e) {
+                    Log.e("取数据发生错误！", e.getMessage());
+                }
 
             }
         });

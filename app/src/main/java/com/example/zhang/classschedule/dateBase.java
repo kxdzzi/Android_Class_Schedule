@@ -19,6 +19,8 @@ public class dateBase extends SQLiteOpenHelper {
     private static final String _WEEKS = "weeks";
     private static final String _IFDOUBLE = "ifDouble";
     private static final String _IFSINGAL = "ifSingal";
+    private static final String _WEEKSTART = "weekStart";
+    private static final String _WEEKEND = "weekEnd";
     private static final String _PositionX = "P_X";
     private static final String _PositionY = "P_Y";
 
@@ -33,8 +35,8 @@ public class dateBase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + _TABLE1 +
                 "(" + _ID + " TEXT PRIMARY KEY,"
                 + _NAME + " TEXT," + _ROOM + " TEXT,"
-                + _WEEKS + " TEXT, " + _IFDOUBLE + " TEXT,"
-                + _IFSINGAL + " TEXT,"
+                + _WEEKS + " TEXT, " + _WEEKSTART + " TEXT," + _WEEKEND + " TEXT,"
+                + _IFDOUBLE + " TEXT," + _IFSINGAL + " TEXT,"
                 + _PositionX + " TEXT," + _PositionY + " TEXT)");
         db.setVersion(1);
 
@@ -65,32 +67,47 @@ public class dateBase extends SQLiteOpenHelper {
         aClass.put(_ID, count++);
         aClass.put(_NAME, tempClass.getClassName());
         aClass.put(_ROOM, tempClass.getClassRoom());
-        aClass.put(_WEEKS, tempClass.getWeeks());
+        aClass.put(_WEEKSTART, tempClass.getWeekStart());
+        aClass.put(_WEEKEND, tempClass.getWeekEnd());
+        aClass.put(_IFSINGAL, tempClass.getIfSingal());
+        aClass.put(_IFDOUBLE, tempClass.getIfDouble());
         aClass.put(_PositionX, tempClass.getPoX());
         aClass.put(_PositionY, tempClass.getPoY());
 
-        myDB.insert(_TABLE1, null, aClass);
-        myDB.close();
-        Log.e("数据库", "插入成功！");
+        try{
+            myDB.insert(_TABLE1, null, aClass);
+            Log.e("数据库", "插入成功！");
+        }
+        catch (Exception e){
+            Log.e("数据库","插入异常！");
+        }
+        finally {
+            myDB.close();
+        }
     }
 
-    public aClass getOne(int Po_x, int Po_y){
+    //查询一条记录
+    public aClass getOne(int Po_x, int Po_y) {
         SQLiteDatabase myDB = this.getReadableDatabase();
         aClass tempClass = new aClass();
-        String selectQuery = "SELECT * FROM "+_TABLE1 + " WHERE "+_PositionX
-                + " = " + Po_x + " AND "+_PositionY +" = "+Po_y;
-        Cursor myCursor= myDB.rawQuery(selectQuery,null);
-        if(myCursor.getCount() > 0){
+        String selectQuery = "SELECT * FROM " + _TABLE1 + " WHERE " + _PositionX
+                + " = " + Po_x + " AND " + _PositionY + " = " + Po_y;
+        Cursor myCursor = myDB.rawQuery(selectQuery, null);
+        if (myCursor.getCount() > 0) {
             myCursor.moveToFirst();
-            Log.e("数据库","查询到记录！");
+            Log.e("数据库", "查询到记录！");
             tempClass.setClassName(myCursor.getString(myCursor.getColumnIndex(_NAME)));
             tempClass.setClassRoom(myCursor.getString(myCursor.getColumnIndex(_ROOM)));
-            tempClass.setWeeks(Integer.valueOf(myCursor.getString(myCursor.getColumnIndex(_WEEKS))));
+            tempClass.setIfSingal(myCursor.getString(myCursor.getColumnIndex(_IFSINGAL)).equals("1"));
+            tempClass.setIfDouble(myCursor.getString(myCursor.getColumnIndex(_IFDOUBLE)).equals("1"));
+            tempClass.setWeekStart(myCursor.getInt(myCursor.getColumnIndex(_WEEKSTART)));
+            tempClass.setWeekEnd(myCursor.getInt(myCursor.getColumnIndex(_WEEKEND)));
             tempClass.setPositionX(Integer.valueOf(myCursor.getString(myCursor.getColumnIndex(_PositionX))));
             tempClass.setPositionY(Integer.valueOf(myCursor.getString(myCursor.getColumnIndex(_PositionY))));
         }
+        myDB.close();
         return tempClass;
-}
+    }
 
 
     public ArrayList<aClass> getAll() {
@@ -108,9 +125,12 @@ public class dateBase extends SQLiteOpenHelper {
                     aClass tempClass = new aClass();
                     tempClass.setClassName(myCursor.getString(myCursor.getColumnIndex(_NAME)));
                     tempClass.setClassRoom(myCursor.getString(myCursor.getColumnIndex(_ROOM)));
-                    tempClass.setWeeks(Integer.valueOf(myCursor.getString(myCursor.getColumnIndex(_WEEKS))));
+                    tempClass.setWeekStart(myCursor.getInt(myCursor.getColumnIndex(_WEEKSTART)));
+                    tempClass.setWeekEnd(myCursor.getInt(myCursor.getColumnIndex(_WEEKEND)));
                     tempClass.setPositionX(Integer.valueOf(myCursor.getString(myCursor.getColumnIndex(_PositionX))));
                     tempClass.setPositionY(Integer.valueOf(myCursor.getString(myCursor.getColumnIndex(_PositionY))));
+                    tempClass.setIfSingal(myCursor.getString(myCursor.getColumnIndex(_IFSINGAL)) == "1");
+                    tempClass.setIfDouble(myCursor.getString(myCursor.getColumnIndex(_IFDOUBLE)) == "1");
                     tempList.add(tempClass);
                 } while (myCursor.moveToNext());
             }
