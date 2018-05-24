@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     public dateBase myClasses;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 //        dialogEvent();
 
     }
-
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -73,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
     protected void initContent() {
         contents = new String[6][7];
@@ -146,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("初始化", "gridView");
         myAdapter = new GridAdapter(this);
         myAdapter.setContents(contents, 6, 7);
-        System.out.println("记录长度为"+contents.length);
+        System.out.println("记录长度为" + contents.length);
         mainGrid.setAdapter(myAdapter);
         this.addClassWindow = myAdapter.addClassDialog;
 

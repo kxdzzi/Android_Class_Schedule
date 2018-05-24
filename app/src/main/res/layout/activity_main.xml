@@ -19,7 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
-
         <LinearLayout
             android:id="@+id/header"
             android:layout_width="match_parent"
@@ -43,10 +42,19 @@
                     android:text="2018年"
                     android:textAlignment="center"
                     android:textColor="#1a237e"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
                 <View
-                    android:id="@+id/view11"
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@android:color/holo_green_light" />
+
+                <View
                     android:layout_width="2dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
@@ -60,7 +68,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_weight="3"
+                    android:layout_weight="2"
                     android:gravity="center"
                     android:spinnerMode="dropdown" />
 
@@ -158,6 +166,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:fillViewport="true"
             android:layout_weight="8.3">
 
             <LinearLayout

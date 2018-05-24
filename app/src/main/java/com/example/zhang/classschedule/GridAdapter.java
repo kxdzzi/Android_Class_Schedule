@@ -59,6 +59,8 @@ public class GridAdapter extends BaseAdapter {
     public GridAdapter(Context context) {
         this.mContext = context;
         LayoutInflater inflater = LayoutInflater.from(mContext);
+
+        //添加课程的dialog
         View dialogview = inflater.inflate(R.layout.add_class_dialog, null);
         addClassDialog = new Dialog(mContext);
         addClassDialog.setContentView(dialogview);
@@ -134,6 +136,8 @@ public class GridAdapter extends BaseAdapter {
             }
         }
         if (getItem(position).equals("")) {
+
+            //添加课程的dialog显示
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -180,7 +184,7 @@ public class GridAdapter extends BaseAdapter {
             }
         });
 
-        //添加课程的dialog
+        //添加课程的dialog初始化
         addClassDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
